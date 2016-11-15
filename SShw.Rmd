@@ -1,0 +1,150 @@
+---
+title: "CMDA 2984 : Introduction to R Assignment"
+author: "CMDA 2984 TAs"
+date: "November 15, 2016"
+output: html_document
+---
+
+
+This assignment has two sections. First, we get you a little more familiar with the R syntax and a few simple operations. Then, we will investigate a dataset.
+SYNTAX.
+Let's start by creating a descending list of numbers from 100 to 1.
+```{r 1}
+h = 100:1
+
+```
+Check out the first index of that list.
+```{r 2}
+h[1]
+```
+And the last index.
+```{r 3}
+h[100]
+```
+Now, access the first five numbers in the list.
+```{r 4}
+h[1:5]
+```
+Now that you understand how to get a range of indices, how do you think we could get all the even numbers in the list? Well, first, we simply want to know how to tell if a number is even. Even just means it is divisible by 2, right? Well, we know that every odd index in the list we created is an even number since the first index is 100. So one way to get all the evens is to get every other index. We could do this with the sequence, <b>seq</b>, function. Let's look at that.
+```{r 5}
+seq(1,100,2)
+```
+So this gets the numbers 1 to 100, with a step of 2. Really, it doesn't even access 100 since it is one past our last step. We could have just asked for 1 to 99 with a step of 2 and created the same sequence.  With this sequence we created, we can place that within the brackets to access all of those indices in the list.
+```{r 6}
+h[seq(1,100,2)]
+```
+There! We found all our even numbers in descending order. Let's try another method that uses the modulus operator. Have you heard of 'modulus'? That is just a fancy way to find the remainder after a division. This will come up a lot in your other coding classes and possibly in your math classes as well, so it is important to understand.  In R, modulus is used by '%%'. Remember long division, when you had your dividend, divisor, quotient, and remainder? Dividing 45 by 7, the divisor is 7, the dividend is 45, 6 is your quotient, with remainder 3. The modulus finds 3.
+```{r 7}
+45 %% 7
+```
+Check out a few more examples and even make your own to be certain you understand.
+
+```{r 8}
+100 %% 100 
+101 %% 100 
+102 %% 100 
+102 %% 10  
+4 %% 10   
+27 %% 7   
+```
+Back to the question of finding even numbers, knowing how to use modulus, we can find even numbers by seeing if the remainder is 0.
+```{r 9}
+h %% 2 == 0
+```
+WHOA! This took the array and checked every number against the condition %% 2 == 0. That's not what we wanted. But using these Trues and Falses, we can now access those indices that are TRUE by passing in this statement to the brackets.
+```{r 10}
+h[h %% 2 == 0]
+```
+
+
+YOUR TURN!  Make a list from 1 to 100 (ascending) and access all the numbers divisible by 3.
+
+
+DATASET
+R has many datasets built-in for you to explore. I will walk you through some plotting with the <b/>faithful</b> dataset and your assignment will use the <b/>iris</b> dataset. The first thing you want to do is to make a copy of the data so you can't mess up the original.  This is very useful as you start building your own dataframes because it can be so easy to accidentally change a row when you meant to change a column. And R has no UNDO button. Always make a copy! Even consider copies of copies to back up the back up.
+Let's find out what this <b/>faithful</b> dataset is by running: 
+```{r 11}
+?faithful
+```
+We see this data is from the Old Faithful Geyser in Yellowstone National Park. We see 272 observations, each with an eruption time in minutes and wait time to the next eruption, also in minutes. Let's make a copy.
+```{r 12}
+dat = faithful
+```
+Now we have a data frame in the environment with 272 rows (observations) and 2 columns. One thing you can do is check out the column names of your new data frame. You can do this simply by clicking on it in your Environment or run:
+```{r 13}
+colnames(dat)
+```
+We can also get a summary of the data. This give us details like minimums, maximums, and means, on each of the variables in the data frame.
+```{r 14}
+summary(dat)
+```
+I mentioned above how easy it is to mess up rows and columns. When you want to access a row or a column it is like finding a point on a graph, (x,y), but rather (row, column). So to get the first row, first column say:
+```{r 15}
+dat[1,1]
+```
+If I want the first observation's waiting time, I need the first row, second column.
+```{r 16}
+dat[1,2]
+```
+If I want the second observation's eruption and waiting times, I need the entire second row. Leaving the column index empty, I access all columns for row 2.
+```{r 17}
+dat[2,]
+```
+If I want ALL the eruption times, then I am asking for the entire first column. To access that I use:
+```{r 18}
+dat[,1]
+```
+ALL waiting times:
+```{r 19}
+dat[,2]
+```
+
+
+
+YOUR TURN!
+Describe the <b/>iris</b> dataset.
+How are the variables in the dataset named?
+What are the mean values of each variable?
+What is the 35th observation in the dataset?
+
+
+
+Let's plot!
+I want to make a plot with eruptions on the x axis and waiting time on y axis. The 'col' parameter assigns color and the 'pch' parameter chooses the point style.  Go google 'pch' and you can find all kinds of point style guides.
+
+```{r 20}
+plot(dat$eruptions, dat$waiting, col='blue', 
+     main="Old Faithful", 
+     xlab="time of eruption", ylab="time to next eruption", pch=20)
+```
+
+Did you see how to get your plot labels and title?
+Notice how there are two groupings? I want to change the colors to indicate this. I'm going to set all points with eruption time <= 2.5 to a color, time >= 3.5 to a color, and then those in between to a third color. To do this. I need to make a vector of colors. I will use an ifelse function to assist me. To learn more about ifelse, use ?ifelse.
+
+```{r 21}
+dat.colors = ifelse(dat$eruptions >= 3.5, "blue",
+                 ifelse(dat$eruptions <= 2.5, "red",
+                        "purple"))
+```
+
+This code leverages the '$' which is a way of getting the column labeled that variable, 'eruptions'. So I'm saying get all the eruptions >= 3.5 and place 'blue' in their indices within the colors vector. Then, all eruptions <= 2.5 get 'red' in the colors vector. Otherwise, we put 'purple'.
+Check it out!
+
+```{r 22}
+dat.colors
+```
+So now, let's use this color vector in our plot.
+```{r23}
+plot(dat$eruptions, dat$waiting, col=dat.colors, 
+     main="Old Faithful", 
+     xlab="time of eruption", ylab="time to next eruption", pch=20)
+```
+
+Fantastic!
+
+
+YOUR TURN!
+Do a basic plot of the iris data with petal length on the x axis and petal width on the y axis. Make sure to give your plot well-chosen axis labels and title.
+Now give your plot color based on species and use a triangle as the point type.  Include this graph in your report. 
+DONE!
+
